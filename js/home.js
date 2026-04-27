@@ -43,7 +43,89 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 3. Lógica de Fotos (Upload e Preview)
+    // 3. Lógica de Fotos (Upload, Preview e Drag-and-Drop para Reordenação)
+    let draggedIndex = null;
+    const photoCache = {}; // Cache para armazenar DataURLs e arquivos
+
+    function renderPhotos() {
+        photoPreview.innerHTML = '';
+        photoCounter.textContent = `${selectedFiles.length} fotos selecionadas`;
+
+        selectedFiles.forEach((fileObj, index) => {
+            const container = document.createElement('div');
+            container.className = 'photo-item';
+            container.draggable = true;
+            container.dataset.index = index;
+
+            const img = document.createElement('img');
+            img.src = fileObj.dataURL || fileObj;
+            img.alt = `Foto ${index + 1}`;
+
+            const indexLabel = document.createElement('div');
+            indexLabel.className = 'photo-index';
+            indexLabel.textContent = index + 1;
+
+            const btnRemove = document.createElement('button');
+            btnRemove.type = 'button';
+            btnRemove.className = 'photo-remove-btn';
+            btnRemove.textContent = '✕';
+            btnRemove.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                selectedFiles.splice(index, 1);
+                renderPhotos();
+            });
+
+            container.appendChild(img);
+            container.appendChild(indexLabel);
+            container.appendChild(btnRemove);
+
+            // Eventos de drag
+            container.addEventListener('dragstart', (e) => {
+                draggedIndex = index;
+                container.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            container.addEventListener('dragend', (e) => {
+                container.classList.remove('dragging');
+                draggedIndex = null;
+                document.querySelectorAll('.photo-item').forEach(item => {
+                    item.classList.remove('drag-over');
+                });
+            });
+
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                if (draggedIndex !== null && draggedIndex !== index) {
+                    container.classList.add('drag-over');
+                }
+            });
+
+            container.addEventListener('dragleave', (e) => {
+                container.classList.remove('drag-over');
+            });
+
+            container.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (draggedIndex !== null && draggedIndex !== index) {
+                    const draggedFile = selectedFiles[draggedIndex];
+                    selectedFiles.splice(draggedIndex, 1);
+                    const insertIndex = draggedIndex < index ? index - 1 : index;
+                    selectedFiles.splice(insertIndex, 0, draggedFile);
+                    draggedIndex = null;
+                    renderPhotos();
+                }
+                container.classList.remove('drag-over');
+            });
+
+            photoPreview.appendChild(container);
+        });
+    }
+
     fotosInput.addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
 
@@ -53,20 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        files.forEach(file => selectedFiles.push(file));
-        photoCounter.textContent = `${selectedFiles.length} fotos selecionadas`;
-
         files.forEach(file => {
             const reader = new FileReader();
             reader.onload = (event) => {
-                const img = document.createElement('img');
-                img.src = event.target.result;
-                img.style.width = '60px';
-                img.style.height = '60px';
-                img.style.objectFit = 'cover';
-                img.style.borderRadius = '4px';
-                img.style.border = '1px solid #ddd';
-                photoPreview.appendChild(img);
+                selectedFiles.push({
+                    file: file,
+                    dataURL: event.target.result
+                });
+                renderPhotos();
             };
             reader.readAsDataURL(file);
         });
@@ -122,7 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Upload das fotos se houver
             const files = selectedFiles;
             if (files.length > 0) {
-                for (let file of files) {
+                for (let fileObj of files) {
+                    const file = fileObj.file;
                     const fileExt = file.name.split('.').pop();
                     const fileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
 

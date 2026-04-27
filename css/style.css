@@ -91,13 +91,96 @@ input:focus {
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #eee;
+    min-height: 100px;
 }
-.photo-preview img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
+
+/* Estilo para cada item de foto */
+.photo-item {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
     border-radius: 4px;
+    overflow: hidden;
+    cursor: grab;
+    transition: all 0.15s ease;
+    border: 2px solid #ddd;
 }
+
+.photo-item:active {
+    cursor: grabbing;
+}
+
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+}
+
+.photo-item:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(74, 128, 241, 0.4);
+    border-color: var(--azul-forte);
+}
+
+/* Foto sendo arrastada */
+.photo-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+/* Foto recebendo o drop */
+.photo-item.drag-over {
+    border-color: #4CAF50;
+    border-width: 3px;
+    background-color: rgba(76, 175, 80, 0.15);
+    transform: scale(1.05);
+}
+
+/* Índice/Número da foto */
+.photo-index {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+/* Botão de remover */
+.photo-remove-btn {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    padding: 3px 5px;
+    font-size: 14px;
+    background-color: rgba(244, 67, 54, 0.9);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0;
+}
+
+.photo-item:hover .photo-remove-btn {
+    opacity: 1;
+}
+
+.photo-remove-btn:hover {
+    background-color: #f44336;
+    transform: scale(1.15);
+}
+
 #file-input-label {
     display: block;
     padding: 15px;
@@ -105,4 +188,14 @@ input:focus {
     text-align: center;
     cursor: pointer;
     background: #f9f9f9;
+    border-radius: 5px;
+    transition: all 0.3s;
+    margin-bottom: 10px;
+    user-select: none;
+}
+
+#file-input-label:hover {
+    border-color: var(--azul-forte);
+    background-color: var(--azul-claro);
+    transform: translateY(-2px);
 }
