@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Controle - Imobiliária</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SDK do Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<script src="base/config.js"></script>
+
+<script>
+  const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+  async function checkUser() {
+    try {
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+      if (error || !session) {
+        console.log("Usuário não autenticado, redirecionando...");
+        window.location.href = 'index.html';
+      } else {
+        console.log('Bem-vindo ao Tabakal:', session.user.email);
+      }
+    } catch (err) {
+      console.error("Erro inesperado na verificação:", err);
+      window.location.href = 'index.html';
+    }
+  }
+
+  checkUser();
+</script>
+
+<main class="dashboard">
+    <header class="header">
+        <h1>Painel de Gestão Imobiliária</h1>
+        <p>Gerencie suas propriedades de forma rápida</p>
+    </header>
+
+    <nav class="menu-grid">
+        <a href="home.html" class="card">
+            <div class="icon blue">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <div class="info">
+                <h3>Cadastrar Imóvel</h3>
+                <p>Adicionar nova unidade ao catálogo</p>
+            </div>
+            <i class="fa-solid fa-chevron-right arrow"></i>
+        </a>
+
+        <a href="modificar.html" class="card">
+            <div class="icon orange">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+            <div class="info">
+                <h3>Modificar Imóveis</h3>
+                <p>Editar informações de imóveis existentes</p>
+            </div>
+            <i class="fa-solid fa-chevron-right arrow"></i>
+        </a>
+    </nav>
+</main>
+
+</body>
+</html>

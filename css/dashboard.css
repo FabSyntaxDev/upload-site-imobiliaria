@@ -1,0 +1,96 @@
+:root {
+    --bg-color: #f4f7fe;
+    --card-bg: #ffffff;
+    --text-primary: #2b3674;
+    --text-secondary: #a3aed0;
+    --blue-brand: #4318ff;
+    --orange-brand: #ffb547;
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.dashboard {
+    width: 90%;
+    max-width: 800px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header h1 {
+    color: var(--text-primary);
+    font-size: 2.2rem;
+    margin: 0;
+}
+
+.header p {
+    color: var(--text-secondary);
+}
+
+.menu-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Estilização do Card (Link) */
+.card {
+    background: var(--card-bg);
+    text-decoration: none; 
+    display: flex;
+    align-items: center;
+    padding: 25px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+    transform: translateX(10px);
+    box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-right: 20px;
+}
+
+.blue { background-color: #f4f7fe; color: var(--blue-brand); }
+.orange { background-color: #fff9f0; color: var(--orange-brand); }
+
+.info {
+    flex: 1;
+}
+
+.info h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+}
+
+.info p {
+    margin: 5px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.arrow {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}

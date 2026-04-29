@@ -24,7 +24,7 @@ async function login() {
             message.style.color = "green";
             
             setTimeout(() => {
-                window.location.href = 'home.html';
+                window.location.href = 'dashboard.html';
             }, 500);
         }
     } catch (err) {
