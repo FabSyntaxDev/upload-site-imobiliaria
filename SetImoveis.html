@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Imóveis - Tabakal</title>
+    <link rel="stylesheet" href="css/SetImoveis.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <main class="page-shell">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">Painel de edição</p>
+                <h1>Gerenciar imóveis cadastrados</h1>
+                <p class="subtitle">Apague, altere ou acesse um imóvel existente. Você pode adicionar novas opções depois sem quebrar o layout.</p>
+            </div>
+            <div class="header-actions">
+                <a class="btn btn-secondary" href="dashboard.html"><i class="fa-solid fa-arrow-left"></i> Voltar ao painel</a>
+            </div>
+        </header>
+
+        <section class="panel-controls">
+            <div class="search-group">
+                <label for="propertySearch">Buscar imóvel</label>
+                <input id="propertySearch" type="text" placeholder="Endereço, bairro ou cidade" autocomplete="off">
+            </div>
+            <div class="summary-card" id="propertySummary">Carregando imóveis...</div>
+        </section>
+
+        <section class="property-list-section">
+            <div class="table-wrapper">
+                <table class="property-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Endereço</th>
+                            <th>Cidade / UF</th>
+                            <th>Valor</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                            <th class="actions-column">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="propertyTableBody">
+                        <tr><td colspan="7" class="loading-row">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state hidden" id="emptyState">
+                <div class="empty-icon"><i class="fa-solid fa-house-crack"></i></div>
+                <p>Nenhum imóvel encontrado. Verifique se você já cadastrou algum imóvel ou ajuste sua busca.</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal hidden" id="editModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card">
+            <header class="modal-header">
+                <h2>Editar imóvel</h2>
+                <button id="closeModalButton" class="icon-button" type="button"><i class="fa-solid fa-xmark"></i></button>
+            </header>
+            <form id="editPropertyForm" class="modal-form">
+                <input type="hidden" id="editPropertyId">
+                <div class="grid-two-columns">
+                    <div class="field-group">
+                        <label for="editEndereco">Endereço</label>
+                        <input id="editEndereco" type="text" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="editBairro">Bairro</label>
+                        <input id="editBairro" type="text" required>
+                    </div>
+                </div>
+                <div class="grid-two-columns">
+                    <div class="field-group">
+                        <label for="editCidade">Cidade</label>
+                        <input id="editCidade" type="text" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="editUf">UF</label>
+                        <input id="editUf" type="text" maxlength="2" required>
+                    </div>
+                </div>
+                <div class="grid-two-columns">
+                    <div class="field-group">
+                        <label for="editAluguel">Valor do aluguel</label>
+                        <input id="editAluguel" type="text" placeholder="0,00">
+                    </div>
+                    <div class="field-group">
+                        <label for="editCondominio">Valor do condomínio</label>
+                        <input id="editCondominio" type="text" placeholder="0,00">
+                    </div>
+                </div>
+                <div class="grid-two-columns">
+                    <div class="field-group">
+                        <label for="editIptu">Valor do IPTU</label>
+                        <input id="editIptu" type="text" placeholder="0,00">
+                    </div>
+                    <div class="field-group">
+                        <label for="editMetragem">Metragem (m²)</label>
+                        <input id="editMetragem" type="number" min="0" step="0.1">
+                    </div>
+                </div>
+                <div class="grid-three-columns">
+                    <div class="field-group">
+                        <label for="editQuartos">Quartos</label>
+                        <input id="editQuartos" type="number" min="0" step="1">
+                    </div>
+                    <div class="field-group">
+                        <label for="editBanheiros">Banheiros</label>
+                        <input id="editBanheiros" type="number" min="0" step="1">
+                    </div>
+                    <div class="field-group">
+                        <label for="editVagas">Vagas</label>
+                        <input id="editVagas" type="number" min="0" step="1">
+                    </div>
+                </div>
+                <div class="grid-two-columns">
+                    <div class="field-group">
+                        <label for="editAluguelVenda">Tipo</label>
+                        <select id="editAluguelVenda">
+                            <option value="true">Aluguel</option>
+                            <option value="false">Venda</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="editStatus">Status</label>
+                        <select id="editStatus">
+                            <option value="true">Disponível</option>
+                            <option value="false">Indisponível</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field-group full-width">
+                    <label for="editDescricao">Descrição</label>
+                    <textarea id="editDescricao" rows="4"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEditButton">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="base/config.js"></script>
+    <script src="js/SetImoveis.js"></script>
+</body>
+</html>
