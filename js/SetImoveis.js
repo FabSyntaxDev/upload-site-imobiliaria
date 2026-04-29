@@ -183,6 +183,7 @@ function openEditModal(property) {
     elements.editDescricao.value = property.descricao || '';
 
     elements.editModal.classList.remove('hidden');
+    elements.editModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function hideModal() {
