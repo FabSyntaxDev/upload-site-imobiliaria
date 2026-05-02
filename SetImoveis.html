@@ -63,6 +63,7 @@
             </header>
             <form id="editPropertyForm" class="modal-form">
                 <input type="hidden" id="editPropertyId">
+                
                 <div class="grid-two-columns">
                     <div class="field-group">
                         <label for="editEndereco">Endereço</label>
@@ -73,6 +74,7 @@
                         <input id="editBairro" type="text" required>
                     </div>
                 </div>
+
                 <div class="grid-two-columns">
                     <div class="field-group">
                         <label for="editCidade">Cidade</label>
@@ -83,9 +85,10 @@
                         <input id="editUf" type="text" maxlength="2" required>
                     </div>
                 </div>
+
                 <div class="grid-two-columns">
                     <div class="field-group">
-                        <label for="editAluguel">Valor do aluguel</label>
+                        <label for="editAluguel">Valor do aluguel/venda</label>
                         <input id="editAluguel" type="text" placeholder="0,00">
                     </div>
                     <div class="field-group">
@@ -93,6 +96,7 @@
                         <input id="editCondominio" type="text" placeholder="0,00">
                     </div>
                 </div>
+
                 <div class="grid-two-columns">
                     <div class="field-group">
                         <label for="editIptu">Valor do IPTU</label>
@@ -103,6 +107,7 @@
                         <input id="editMetragem" type="number" min="0" step="0.1">
                     </div>
                 </div>
+
                 <div class="grid-three-columns">
                     <div class="field-group">
                         <label for="editQuartos">Quartos</label>
@@ -117,9 +122,20 @@
                         <input id="editVagas" type="number" min="0" step="1">
                     </div>
                 </div>
-                <div class="grid-two-columns">
+
+                <div class="grid-three-columns">
                     <div class="field-group">
-                        <label for="editAluguelVenda">Tipo</label>
+                        <label for="editTipo">Tipo de Imóvel</label>
+                        <select id="editTipo">
+                            <option value="Apartamento">Apartamento</option>
+                            <option value="Loja">Loja</option>
+                            <option value="Casa">Casa</option>
+                            <option value="Sala Comercial">Sala Comercial</option>
+                            <option value="KitNet">KitNet</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="editAluguelVenda">Negócio</label>
                         <select id="editAluguelVenda">
                             <option value="true">Aluguel</option>
                             <option value="false">Venda</option>
@@ -133,10 +149,12 @@
                         </select>
                     </div>
                 </div>
+
                 <div class="field-group full-width">
                     <label for="editDescricao">Descrição</label>
                     <textarea id="editDescricao" rows="4"></textarea>
                 </div>
+
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancelEditButton">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Salvar alterações</button>

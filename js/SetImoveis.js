@@ -27,6 +27,7 @@ const elements = {
     editQuartos: document.getElementById('editQuartos'),
     editBanheiros: document.getElementById('editBanheiros'),
     editVagas: document.getElementById('editVagas'),
+    editTipo: document.getElementById('editTipo'), // NOVO
     editAluguelVenda: document.getElementById('editAluguelVenda'),
     editStatus: document.getElementById('editStatus'),
     editDescricao: document.getElementById('editDescricao')
@@ -81,7 +82,6 @@ function formatCurrency(value) {
     if (value === null || value === undefined || Number.isNaN(Number(value))) {
         return 'R$ 0,00';
     }
-
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
@@ -101,7 +101,8 @@ function renderProperties() {
     elements.emptyState.classList.add('hidden');
 
     elements.tableBody.innerHTML = properties.map((property, index) => {
-        const typeLabel = property.aluguel ? 'Aluguel' : 'Venda';
+        // Mostra o tipo (Casa, Apto) na tabela se existir, caso contrário mostra o tipo de negócio
+        const typeLabel = property.tipo || (property.aluguel ? 'Aluguel' : 'Venda');
         const statusLabel = property.status ? 'Disponível' : 'Indisponível';
         const statusClass = property.status ? 'available' : 'unavailable';
         const valueLabel = property.valor_aluguel ? formatCurrency(property.valor_aluguel) : 'R$ 0,00';
@@ -132,7 +133,7 @@ function handleSearchInput(event) {
         state.filteredProperties = [...state.properties];
     } else {
         state.filteredProperties = state.properties.filter(property => {
-            const content = [property.endereco, property.bairro, property.cidade, property.uf]
+            const content = [property.endereco, property.bairro, property.cidade, property.uf, property.tipo]
                 .filter(Boolean)
                 .join(' ') 
                 .toLowerCase();
@@ -144,25 +145,17 @@ function handleSearchInput(event) {
 
 function handleTableClick(event) {
     const button = event.target.closest('button[data-action]');
-    if (!button) {
-        return;
-    }
+    if (!button) return;
 
     const action = button.dataset.action;
     const propertyId = button.dataset.id;
     const property = state.properties.find(item => String(item.id) === propertyId);
-    if (!property) {
-        console.warn('Imóvel não encontrado:', propertyId);
-        return;
-    }
+    
+    if (!property) return;
 
-    if (action === 'edit') {
-        openEditModal(property);
-    } else if (action === 'delete') {
-        deleteProperty(property);
-    } else if (action === 'open') {
-        goToProperty(property);
-    }
+    if (action === 'edit') openEditModal(property);
+    else if (action === 'delete') deleteProperty(property);
+    else if (action === 'open') goToProperty(property);
 }
 
 function openEditModal(property) {
@@ -178,12 +171,12 @@ function openEditModal(property) {
     elements.editQuartos.value = property.quartos || ''; 
     elements.editBanheiros.value = property.banheiros || '';
     elements.editVagas.value = property.vagas || '';
+    elements.editTipo.value = property.tipo || 'Apartamento'; // CARREGA O TIPO
     elements.editAluguelVenda.value = String(property.aluguel);
     elements.editStatus.value = String(property.status ?? true);
     elements.editDescricao.value = property.descricao || '';
 
     elements.editModal.classList.remove('hidden');
-    elements.editModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function hideModal() {
@@ -191,9 +184,7 @@ function hideModal() {
 }
 
 function currencyToNumber(value) {
-    if (!value) {
-        return null;
-    }
+    if (!value) return null;
     const cleaned = value.toString().replace(/[^\d,.-]/g, '').replace(',', '.');
     const numberValue = parseFloat(cleaned);
     return Number.isFinite(numberValue) ? numberValue : null;
@@ -215,6 +206,7 @@ async function handleEditSubmit(event) {
         quartos: elements.editQuartos.value ? parseInt(elements.editQuartos.value, 10) : null,
         banheiros: elements.editBanheiros.value ? parseInt(elements.editBanheiros.value, 10) : null,
         vagas: elements.editVagas.value ? parseInt(elements.editVagas.value, 10) : null,
+        tipo: elements.editTipo.value, // SALVA O TIPO
         aluguel: elements.editAluguelVenda.value === 'true',
         status: elements.editStatus.value === 'true',
         descricao: elements.editDescricao.value.trim(),
@@ -228,16 +220,13 @@ async function handleEditSubmit(event) {
 
     if (error) {
         console.error('Erro ao atualizar imóvel:', error);
-        alert('Não foi possível atualizar o imóvel. Tente novamente.');
+        alert('Não foi possível atualizar o imóvel.');
         return;
     }
 
     const index = state.properties.findIndex(item => String(item.id) === id);
     if (index !== -1) {
-        state.properties[index] = {
-            ...state.properties[index],
-            ...updatedProperty
-        };
+        state.properties[index] = { ...state.properties[index], ...updatedProperty };
         handleSearchInput({ target: { value: elements.searchInput.value } });
     }
 
@@ -246,19 +235,13 @@ async function handleEditSubmit(event) {
 }
 
 async function deleteProperty(property) {
-    const confirmed = confirm(`Tem certeza que deseja apagar o imóvel "${property.endereco || 'sem endereço'}"? Esta ação não pode ser desfeita.`);
-    if (!confirmed) {
-        return;
-    }
+    const confirmed = confirm(`Tem certeza que deseja apagar o imóvel "${property.endereco || 'sem endereço'}"?`);
+    if (!confirmed) return;
 
-    const { error } = await supabaseClient
-        .from('imoveis')
-        .delete()
-        .eq('id', property.id);
+    const { error } = await supabaseClient.from('imoveis').delete().eq('id', property.id);
 
     if (error) {
-        console.error('Erro ao apagar imóvel:', error);
-        alert('Não foi possível apagar o imóvel. Tente novamente.');
+        alert('Não foi possível apagar o imóvel.');
         return;
     }
 
@@ -269,6 +252,5 @@ async function deleteProperty(property) {
 
 function goToProperty(property) {
     const placeholderUrl = `imovel.html?id=${property.id}`;
-    alert('Redirecionamento para o imóvel será configurado depois. URL sugerida: ' + placeholderUrl);
-    // Alterar futuramente - Exemplo: window.location.href = `/imovel/${property.id}`;
+    alert('URL: ' + placeholderUrl);
 }
