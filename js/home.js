@@ -176,6 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const cidade = document.getElementById('cidade').value;
             const uf = document.getElementById('uf').value;
             const aluguel = currencyToNumber(document.getElementById('aluguel').value);
+            const tipoImovel = document.getElementById('tipoImovel').value;
             const condo = currencyToNumber(document.getElementById('condo').value);
             const iptu = currencyToNumber(document.getElementById('iptu').value);
             const quartos = parseInt(document.getElementById('quartos').value);
@@ -230,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     bairro: bairro,
                     cidade: cidade,
                     uf: uf,
+                    tipo: tipoImovel,
                     valor_aluguel: aluguel,
                     valor_condominio: condo,
                     valor_iptu: iptu,
