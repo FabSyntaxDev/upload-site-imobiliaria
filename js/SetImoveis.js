@@ -185,7 +185,12 @@ function hideModal() {
 
 function currencyToNumber(value) {
     if (!value) return null;
-    const cleaned = value.toString().replace(/[^\d,.-]/g, '').replace(',', '.');
+    // Remove "R$ " e espaços
+    let cleaned = value.toString().replace(/R\$\s?/g, '').trim();
+    // Remove pontos de milhar (.)
+    cleaned = cleaned.replace(/\./g, '');
+    // Substitui vírgula decimal por ponto
+    cleaned = cleaned.replace(',', '.');
     const numberValue = parseFloat(cleaned);
     return Number.isFinite(numberValue) ? numberValue : null;
 }
